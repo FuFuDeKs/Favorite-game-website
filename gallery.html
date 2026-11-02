@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spēles saturs – Terraria</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="main-header" id="main-header">
+        <div class="header-content">
+            <span class="header-title">TERRARIA</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-link">Sākums</a>
+            <a href="/about" class="nav-link">Par spēli</a>
+            <a href="/content" class="nav-link">Spēles saturs</a>
+            <a href="/news" class="nav-link">Ziņas</a>
+            <a href="/gallery" class="nav-link">Galerija</a>
+            <a href="/search" class="nav-link">Meklēt</a>
+            <a href="/admin" class="nav-link admin-btn">Admin Panelis</a>
+        </nav>
+    </header>
+    <main class="page-wrapper gallery-page">
+        <h2 class="section-heading">Galerija</h2>
+        <p class="hero-tagline">Apskati Terraria pasauli, priekšmetus un ienaidniekus.</p>
+        <div id="gallery-status" class="gallery-status" role="status">Lādē galeriju...</div>
+        <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
+    </main>
+    <div class="lightbox" id="gallery-lightbox" role="dialog" aria-modal="true" aria-label="Attēla priekšskatījums">
+        <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Aizvērt">×</button>
+        <img id="lightbox-image" src="" alt="">
+        <p class="lightbox-label" id="lightbox-label"></p>
+    </div>
+    <footer class="main-footer" id="main-footer">
+        <p class="footer-text">Project made by Romans Majevskis for school. Educational purposes only.</p>
+    </footer>
+    <script src="/gallery.js" defer></script>
+</body>
+</html>

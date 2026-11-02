@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 – Nav atrasts | Terraria</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .error-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            text-align: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            color: white;
+        }
+        .error-code {
+            font-size: 64px;
+            margin: 0 0 10px 0;
+            color: #ff6b35;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        }
+        .error-msg {
+            font-size: 14px;
+            margin: 0 0 30px 0;
+            color: rgba(255, 255, 255, 0.75);
+        }
+        .turtle-img {
+            width: 160px;
+            height: auto;
+            image-rendering: pixelated;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-12px); }
+        }
+        .home-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: rgba(255, 107, 53, 0.85);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .home-btn:hover {
+            background-color: rgba(255, 107, 53, 1);
+            transform: translateY(-2px);
+        }
+        .home-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header" id="main-header">
+        <div class="header-content">
+            <span class="header-title">TERRARIA</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-link">Sākums</a>
+            <a href="/about" class="nav-link">Par spēli</a>
+            <a href="/content" class="nav-link">Spēles saturs</a>
+            <a href="/news" class="nav-link">Ziņas</a>
+            <a href="/gallery" class="nav-link">Galerija</a>
+            <a href="/search" class="nav-link">Meklēt</a>
+            <a href="/admin" class="nav-link admin-btn">Admin Panelis</a>
+        </nav>
+    </header>
+
+    <div class="error-page">
+        <img src="/assets/terraria-logo-transparent.png" alt="Terraria Turtle" class="turtle-img">
+        <h2 class="error-code">404</h2>
+        <p class="error-msg">Nav atrasts – šāda lapa neeksistē.</p>
+        <a href="/" class="home-btn">⬅ Atpakaļ uz sākumu</a>
+    </div>
+
+    <footer class="main-footer" id="main-footer">
+        <p class="footer-text">Project made by Romans Majevskis for school. Educational purposes only.</p>
+    </footer>
+    <script src="/func.js"></script>
+</body>
+</html>

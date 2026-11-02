@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin panelis – Terraria</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .admin-page{width:min(900px,calc(100% - 32px));margin:48px auto 100px}
+        .admin-section{display:grid;gap:16px;margin:28px 0;padding:24px;background:rgba(10,14,12,.9);border:1px solid rgba(255,180,0,.3);border-radius:8px}
+        .admin-form{display:grid;gap:16px}
+        .admin-form label{display:grid;gap:8px;color:#ffdc96}
+        .admin-form input,.admin-form textarea{width:100%;box-sizing:border-box;padding:12px;background:#101713;color:#fff;border:1px solid rgba(255,180,0,.35);border-radius:5px;font:inherit}
+        .admin-form textarea{min-height:100px;resize:vertical}
+        .admin-form button,.admin-action{padding:11px 15px;background:#d87924;color:#fff;border:0;border-radius:5px;cursor:pointer;font:inherit}
+        .admin-actions{display:flex;gap:10px;flex-wrap:wrap}
+        .admin-action.secondary{background:#46534a}.admin-action.danger{background:#963d32}
+        .admin-message{min-height:24px;color:#ffdc96;margin:0}
+        .admin-news-list{display:grid;gap:12px}
+        .admin-news-item{padding:16px;border:1px solid rgba(255,180,0,.22);border-radius:6px;background:rgba(255,255,255,.03)}
+        .admin-news-item h3{margin:0 0 8px;color:#ffdc96}.admin-news-item p{margin:6px 0;color:#eee}
+        .admin-news-meta{font-size:.9rem;color:#c6b99e}
+        .admin-dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:28px 0}
+        .admin-dashboard button{padding:24px;text-align:left;background:rgba(10,14,12,.9);border:1px solid rgba(255,180,0,.35);border-radius:8px;color:#fff;cursor:pointer;font:inherit;transition:border-color .2s,transform .2s}
+        .admin-dashboard button:hover{border-color:#ffb400;transform:translateY(-2px)}
+        .admin-dashboard strong{display:block;color:#ffdc96;font-size:1.2rem;margin-bottom:8px}
+        .admin-back{margin:0 0 12px;background:#46534a;color:#fff;border:0;border-radius:5px;padding:9px 13px;cursor:pointer;font:inherit}
+        [hidden]{display:none!important}
+    </style>
+</head>
+<body>
+<header class="main-header">
+    <div class="header-content"><span class="header-title">TERRARIA</span></div>
+    <nav class="nav-menu">
+        <a href="/" class="nav-link">Sākums</a>
+        <a href="/gallery" class="nav-link">Galerija</a>
+        <a href="/news" class="nav-link">Ziņas</a>
+    </nav>
+</header>
+<main class="admin-page">
+    <h2 class="section-heading">Admin panelis</h2>
+
+    <div id="admin-dashboard" class="admin-dashboard">
+        <button type="button" data-admin-section="gallery"><strong>Galerijas pārvaldība</strong><span>Pievieno un pārvaldi Terraria attēlus.</span></button>
+        <button type="button" data-admin-section="news"><strong>Ziņu pārvaldība</strong><span>Pievieno, rediģē un dzēs ziņas.</span></button>
+    </div>
+
+    <section id="gallery-section" class="admin-section" hidden>
+        <button type="button" class="admin-back" data-admin-home>← Atpakaļ uz paneli</button>
+        <h2>Galerijas pārvaldība</h2>
+        <p class="hero-tagline">Pievieno attēlu galerijai. Attēls tiks augšupielādēts serverī, un tā adrese automātiski saglabāsies datubāzē.</p>
+        <form id="gallery-upload-form" class="admin-form">
+            <label>Attēla nosaukums<input name="title" maxlength="150" required></label>
+            <label>Apraksts<textarea name="description" maxlength="1000"></textarea></label>
+            <label>Attēls (PNG, JPG vai WebP; līdz 5 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp" required></label>
+            <button type="submit">Augšupielādēt attēlu</button>
+            <p id="upload-message" class="admin-message" role="status"></p>
+        </form>
+    </section>
+
+    <section id="news-section" class="admin-section" hidden>
+        <button type="button" class="admin-back" data-admin-home>← Atpakaļ uz paneli</button>
+        <h2>Ziņu pārvaldība</h2>
+        <p>Šeit vari pievienot jaunas ziņas, rediģēt esošās vai tās dzēst.</p>
+        <form id="news-form" class="admin-form">
+            <input type="hidden" name="id">
+            <label>Kategorija<input name="category" maxlength="50" required placeholder="Piemēram, Atjauninājums"></label>
+            <label>Virsraksts<input name="title" maxlength="150" required></label>
+            <label>Īsais apraksts<textarea name="short_description" required></textarea></label>
+            <label>Ziņas pilnais teksts<textarea name="full_content" required style="min-height:180px"></textarea></label>
+            <label>Publicēšanas datums<input name="publish_date" type="date" required></label>
+            <div class="admin-actions">
+                <button id="news-submit" type="submit">Pievienot ziņu</button>
+                <button id="news-cancel" class="admin-action secondary" type="button" hidden>Atcelt rediģēšanu</button>
+            </div>
+            <p id="news-message" class="admin-message" role="status"></p>
+        </form>
+        <h3>Publicētās ziņas</h3>
+        <div id="admin-news-list" class="admin-news-list" aria-live="polite">Ielādē ziņas...</div>
+    </section>
+</main>
+<footer class="main-footer"><p class="footer-text">Mācību projekts.</p></footer>
+<script>
+const $ = (selector) => document.querySelector(selector);
+const dashboard = $('#admin-dashboard');
+const adminSections = { gallery: $('#gallery-section'), news: $('#news-section') };
+function showAdminDashboard() {
+    dashboard.hidden = false;
+    Object.values(adminSections).forEach(section => section.hidden = true);
+}
+function showAdminSection(name) {
+    dashboard.hidden = true;
+    Object.entries(adminSections).forEach(([key, section]) => section.hidden = key !== name);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+dashboard.querySelectorAll('[data-admin-section]').forEach(button => {
+    button.addEventListener('click', () => showAdminSection(button.dataset.adminSection));
+});
+document.querySelectorAll('[data-admin-home]').forEach(button => button.addEventListener('click', showAdminDashboard));
+showAdminDashboard();
+
+const galleryForm = $('#gallery-upload-form');
+galleryForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const message = $('#upload-message');
+    const file = galleryForm.elements.image.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { message.textContent = 'Attēls ir lielāks par 5 MB.'; return; }
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { message.textContent = 'Izvēlies PNG, JPG vai WebP attēlu.'; return; }
+    message.textContent = 'Augšupielādē...';
+    const reader = new FileReader();
+    reader.onerror = () => { message.textContent = 'Neizdevās nolasīt attēlu.'; };
+    reader.onload = async () => {
+        try {
+            const response = await fetch('/api/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: galleryForm.elements.title.value, description: galleryForm.elements.description.value, image: reader.result }) });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Augšupielāde neizdevās.');
+            message.textContent = 'Attēls veiksmīgi pievienots galerijai!'; galleryForm.reset();
+        } catch (error) { message.textContent = error.message; }
+    };
+    reader.readAsDataURL(file);
+});
+
+const newsForm = $('#news-form');
+const newsList = $('#admin-news-list');
+const newsMessage = $('#news-message');
+const newsSubmit = $('#news-submit');
+const newsCancel = $('#news-cancel');
+const today = new Date();
+const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+newsForm.elements.publish_date.value = localToday;
+
+function setNewsMessage(text) { newsMessage.textContent = text; }
+function resetNewsForm() {
+    newsForm.reset(); newsForm.elements.id.value = ''; newsForm.elements.publish_date.value = localToday;
+    newsSubmit.textContent = 'Pievienot ziņu'; newsCancel.hidden = true; setNewsMessage('');
+}
+
+async function loadAdminNews() {
+    newsList.textContent = 'Ielādē ziņas...';
+    try {
+        const response = await fetch('/api/admin/news');
+        const rows = await response.json();
+        if (!response.ok) throw new Error(rows.error || 'Neizdevās ielādēt ziņas.');
+        newsList.replaceChildren();
+        if (!rows.length) { newsList.textContent = 'Ziņu vēl nav.'; return; }
+        rows.forEach(article => {
+            const item = document.createElement('article'); item.className = 'admin-news-item';
+            const title = document.createElement('h3'); title.textContent = article.title;
+            const meta = document.createElement('p'); meta.className = 'admin-news-meta'; meta.textContent = `${article.category} · ${String(article.publish_date).slice(0, 10)}`;
+            const description = document.createElement('p'); description.textContent = article.short_description;
+            const actions = document.createElement('div'); actions.className = 'admin-actions';
+            const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'admin-action'; edit.textContent = 'Rediģēt';
+            edit.addEventListener('click', () => {
+                newsForm.elements.id.value = article.id;
+                newsForm.elements.category.value = article.category;
+                newsForm.elements.title.value = article.title;
+                newsForm.elements.short_description.value = article.short_description;
+                newsForm.elements.full_content.value = article.full_content;
+                newsForm.elements.publish_date.value = String(article.publish_date).slice(0, 10);
+                newsSubmit.textContent = 'Saglabāt izmaiņas'; newsCancel.hidden = false;
+                setNewsMessage(`Rediģē ziņu: ${article.title}`);
+                newsForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'admin-action danger'; remove.textContent = 'Dzēst';
+            remove.addEventListener('click', async () => {
+                if (!confirm(`Vai tiešām dzēst ziņu “${article.title}”?`)) return;
+                try {
+                    const result = await fetch(`/api/admin/news/${article.id}`, { method: 'DELETE' });
+                    const data = await result.json(); if (!result.ok) throw new Error(data.error || 'Neizdevās dzēst ziņu.');
+                    if (newsForm.elements.id.value === String(article.id)) resetNewsForm();
+                    setNewsMessage('Ziņa izdzēsta.'); await loadAdminNews();
+                } catch (error) { setNewsMessage(error.message); }
+            });
+            actions.append(edit, remove); item.append(title, meta, description, actions); newsList.append(item);
+        });
+    } catch (error) { newsList.textContent = error.message; }
+}
+
+newsForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const id = newsForm.elements.id.value;
+    const payload = {
+        category: newsForm.elements.category.value,
+        title: newsForm.elements.title.value,
+        short_description: newsForm.elements.short_description.value,
+        full_content: newsForm.elements.full_content.value,
+        publish_date: newsForm.elements.publish_date.value
+    };
+    setNewsMessage('Saglabā...');
+    try {
+        const response = await fetch(id ? `/api/admin/news/${id}` : '/api/admin/news', {
+            method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
+        const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Neizdevās saglabāt ziņu.');
+        resetNewsForm(); setNewsMessage(id ? 'Izmaiņas saglabātas!' : 'Jaunā ziņa pievienota!'); await loadAdminNews();
+    } catch (error) { setNewsMessage(error.message); }
+});
+newsCancel.addEventListener('click', resetNewsForm);
+loadAdminNews();
+</script>
+</body>
+</html>

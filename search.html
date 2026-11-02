@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meklēt – Terraria</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="main-header" id="main-header">
+        <div class="header-content">
+            <span class="header-title">TERRARIA</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-link">Sākums</a>
+            <a href="/about" class="nav-link">Par spēli</a>
+            <a href="/content" class="nav-link">Spēles saturs</a>
+            <a href="/news" class="nav-link">Ziņas</a>
+            <a href="/gallery" class="nav-link">Galerija</a>
+            <a href="/search" class="nav-link">Meklēt</a>
+            <a href="/admin" class="nav-link admin-btn">Admin Panelis</a>
+        </nav>
+    </header>
+
+    <main style="padding: 50px 20px; box-sizing: border-box; min-height: calc(100vh - 100px);">
+        <div class="main-text search-page">
+            <h2 class="section-heading">Meklēt Terraria saturā</h2>
+            <form id="site-search-form" class="site-search-form">
+                <label for="site-search-input">Meklēšanas vārds</label>
+                <div class="site-search-row">
+                    <input id="site-search-input" type="search" minlength="2" maxlength="100" placeholder="Piemēram, boss..." required>
+                    <button type="submit">Meklēt</button>
+                </div>
+            </form>
+            <p id="search-status" role="status"></p>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </main>
+
+    <footer class="main-footer" id="main-footer">
+        <p class="footer-text">Project made by Romans Majevkis for school. Educational purposes only.</p>
+    </footer>
+    <script src="/search.js" defer></script>
+</body>
+</html>
